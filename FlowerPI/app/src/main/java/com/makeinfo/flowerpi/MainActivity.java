@@ -1,7 +1,7 @@
 package com.makeinfo.flowerpi;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -10,13 +10,17 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.makeinfo.flowerpi.API.gitapi;
-import com.makeinfo.flowerpi.model.gitmodel;
+import com.makeinfo.flowerpi.API.GitHubService;
+import com.makeinfo.flowerpi.model.User;
+import com.squareup.okhttp.ResponseBody;
 
+import java.io.IOException;
+
+import retrofit.Call;
 import retrofit.Callback;
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit.GsonConverterFactory;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -41,23 +45,45 @@ public class MainActivity extends ActionBarActivity {
             public void onClick(View v) {
                 String user = edit_user.getText().toString();
                 pbar.setVisibility(View.VISIBLE);
-                RestAdapter restAdapter = new RestAdapter.Builder()
-                        .setEndpoint(API).build();
-                gitapi git = restAdapter.create(gitapi.class);
 
-                git.getFeed(user,new Callback<gitmodel>() {
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(API)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+
+                GitHubService git = retrofit.create(GitHubService.class);
+                Call call = git.getUser(user);
+                call.enqueue(new Callback<User>() {
                     @Override
-                    public void success(gitmodel gitmodel, Response response) {
-                        tv.setText("Github Name :"+gitmodel.getName()+"\nWebsite :"+gitmodel.getBlog()+"\nCompany Name :"+gitmodel.getCompany());
+                    public void onResponse(Response<User> response) {
+                        User model = response.body();
+
+                        if (model==null) {
+                            //404 or the response cannot be converted to User.
+                            ResponseBody responseBody = response.errorBody();
+                            if (responseBody!=null) {
+                                try {
+                                    tv.setText("responseBody = "+responseBody.string());
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                tv.setText("responseBody = null");
+                            }
+                        } else {
+                            //200
+                            tv.setText("Github Name :"+model.getName()+"\nWebsite :"+model.getBlog()+"\nCompany Name :"+model.getCompany());
+                        }
                         pbar.setVisibility(View.INVISIBLE);
                     }
 
                     @Override
-                    public void failure(RetrofitError error) {
-                     tv.setText(error.getMessage());
+                    public void onFailure(Throwable t) {
+                        tv.setText("t = "+t.getMessage());
                         pbar.setVisibility(View.INVISIBLE);
                     }
                 });
+
             }
         });
     }

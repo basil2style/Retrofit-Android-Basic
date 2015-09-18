@@ -1,11 +1,10 @@
 package com.makeinfo.flowerpi.model;
 
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 
-public class gitmodel {
+public class User {
 
     @Expose
     private String login;
