@@ -1,91 +1,25 @@
 package com.makeinfo.flowerpi;
 
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
-import com.makeinfo.flowerpi.API.GitHubService;
-import com.makeinfo.flowerpi.model.User;
-
-import java.io.IOException;
-
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.GsonConverterFactory;
-import retrofit2.Response;
-import retrofit2.Retrofit;
+import com.makeinfo.flowerpi.databinding.ActivityMainBinding;
+import com.makeinfo.flowerpi.vm.MainViewModel;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
 
-    Button click;
-    TextView tv;
-    EditText edit_user;
-    ProgressBar pbar;
-    String API = "https://api.github.com";
+    private ActivityMainBinding binding;
+    private MainViewModel model;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        click = (Button) findViewById(R.id.button);
-        tv = (TextView) findViewById(R.id.tv);
-        edit_user = (EditText) findViewById(R.id.edit);
-        pbar = (ProgressBar) findViewById(R.id.pb);
-        pbar.setVisibility(View.INVISIBLE);
-        click.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String user = edit_user.getText().toString();
-                pbar.setVisibility(View.VISIBLE);
-
-                Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl(API)
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
-
-                GitHubService git = retrofit.create(GitHubService.class);
-                Call call = git.getUser(user);
-                call.enqueue(new Callback<User>() {
-                    @Override
-                    public void onResponse(Response<User> response) {
-                        User model = response.body();
-
-                        if (model==null) {
-                            //404 or the response cannot be converted to User.
-                            ResponseBody responseBody = response.errorBody();
-                            if (responseBody!=null) {
-                                try {
-                                    tv.setText("responseBody = "+responseBody.string());
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            } else {
-                                tv.setText("responseBody = null");
-                            }
-                        } else {
-                            //200
-                            tv.setText("Github Name :"+model.getName()+"\nWebsite :"+model.getBlog()+"\nCompany Name :"+model.getCompany());
-                        }
-                        pbar.setVisibility(View.INVISIBLE);
-                    }
-
-                    @Override
-                    public void onFailure(Throwable t) {
-                        tv.setText("t = "+t.getMessage());
-                        pbar.setVisibility(View.INVISIBLE);
-                    }
-                });
-
-            }
-        });
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        binding.setModel(model = new MainViewModel(binding));
     }
 
 
