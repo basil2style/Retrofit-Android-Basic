@@ -5,23 +5,34 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.makeinfo.flowerpi.databinding.ActivityMainBinding;
+import com.makeinfo.flowerpi.model.GitHubModel;
 import com.makeinfo.flowerpi.vm.MainViewModel;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
-    private MainViewModel model;
+    private MainViewModel viewModel;
+    private GitHubModel model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        binding.setModel(model = new MainViewModel(binding));
-    }
+        binding.setModel(viewModel = new MainViewModel());
+        model = new GitHubModel(viewModel);
 
+        binding.button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewModel.setPb(true);
+                model.getUser(binding.username.getText().toString());
+            }
+        });
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

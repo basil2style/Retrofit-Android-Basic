@@ -30,8 +30,7 @@
             android:layout_marginLeft="56dp"
             android:layout_marginStart="56dp"
             android:layout_marginTop="39dp"
-            android:text="Click"
-            android:onClick="@{model.btnClickListener}"/>
+            android:text="Click"/>
 
         <TextView
             android:id="@+id/tv"

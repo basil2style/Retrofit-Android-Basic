@@ -1,6 +1,6 @@
 package com.makeinfo.flowerpi.API;
 
-import com.makeinfo.flowerpi.model.User;
+import com.makeinfo.flowerpi.bean.User;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
