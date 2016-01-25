@@ -7,17 +7,15 @@ import android.view.View;
 import com.makeinfo.flowerpi.API.GitHubService;
 import com.makeinfo.flowerpi.BR;
 import com.makeinfo.flowerpi.databinding.ActivityMainBinding;
-import com.makeinfo.flowerpi.model.Constant;
 import com.makeinfo.flowerpi.model.User;
+import com.makeinfo.flowerpi.net.ServiceGenerator;
 
 import java.io.IOException;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.GsonConverterFactory;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 /**
  * Created by Andy on 1/25/2016.
@@ -28,7 +26,7 @@ public class MainViewModel extends BaseObservable {
     private String text;
     private boolean pb;
     private ActivityMainBinding binding;
-
+    private GitHubService git;
     private View.OnClickListener btnClickListener;
 
     public MainViewModel(ActivityMainBinding binding) {
@@ -37,17 +35,12 @@ public class MainViewModel extends BaseObservable {
     }
 
     private void init() {
+        git = ServiceGenerator.createService(GitHubService.class);
+
         this.btnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 setPb(true);
-
-                Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl(Constant.BASE_URL)
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
-
-                GitHubService git = retrofit.create(GitHubService.class);
                 Call call = git.getUser(binding.username.getText().toString());
                 call.enqueue(new Callback<User>() {
                     @Override
