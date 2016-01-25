@@ -2,9 +2,9 @@ package com.makeinfo.flowerpi.API;
 
 import com.makeinfo.flowerpi.model.User;
 
-import retrofit.Call;
-import retrofit.http.GET;
-import retrofit.http.Path;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
 
 
 public interface GitHubService {
