@@ -1,4 +1,4 @@
-package com.makeinfo.flowerpi.model;
+package com.makeinfo.flowerpi.bean;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
